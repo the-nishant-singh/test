@@ -23,16 +23,14 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a href="/" class="navbar-brand">Home</a>
     </div>
     <nav class="collapse navbar-collapse" role="navigation">
       <ul class="nav navbar-nav">
+        <%for(i=0;i<menu.length;i++){%>
         <li>
-          <a href="/hotel">Hotel</a>
+          <a href="<%=menu[i].link%>"><%=menu[i].page%></a>
         </li>
-        <li> 
-          <a href="/city">City</a>
-        </li>
+        <%}%>
       </ul>
       <ul class="nav navbar-right navbar-nav">
         <li class="dropdown">

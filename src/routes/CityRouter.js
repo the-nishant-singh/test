@@ -1,55 +1,54 @@
 var express = require('express');
 var cityRouter = express.Router();
+var mongodb = require('mongodb').MongoClient;
+var cityurl = "mongodb+srv://admin:admin@cluster0.ka8dm.mongodb.net/aryabhata?retryWrites=true&w=majority"
 
-var city = [
-    {
-      "_id": 1,
-      "city_name": "Delhi",
-      "city": 1,
-      "country_name": "India"
-    },
-    {
-      "_id": 3,
-      "city_name": "Pune",
-      "city": 3,
-      "country_name": "India"
-    },
-    {
-      "_id": 2,
-      "city_name": "Mumbai",
-      "city": 2,
-      "country_name": "India"
-    },
-    {
-      "_id": 4,
-      "city_name": "Chandigarh",
-      "city": 4,
-      "country_name": "India"
-    },
-    {
-      "_id": 5,
-      "city_name": "Goa",
-      "city": 5,
-      "country_name": "India"
-    },
-    {
-      "_id": 6,
-      "city_name": "Manali",
-      "city": 6,
-      "country_name": "India"
-    }
-  ]
+function router(menu){
 
-//http://localhost:8700/city
-cityRouter.route('/')
-    .get(function(req,res){
-        //res.send(city)
-        res.render('city',{title:"City Page"})
-    })
-//http://localhost:8700/city/details
-cityRouter.route('/details')
-    .get(function(req,res){
-        res.send('City Details')
-    })
+  //http://localhost:8700/city
+  cityRouter.route('/')
+  .get(function(req,res){
+      // creating connection
+      mongodb.connect(cityurl,(err,connection)=>{
+        if(err){
+          res.status(500).send("Error While Connecting")
+        }else{
+          //connection got created and pass db name
+          const dbo = connection.db('aryabhata');
+          //make find query to collection
+          dbo.collection('city').find({}).toArray((err,data) => {
+            if(err){
+              res.status(501).send("Error while fetching")
+            }else{
+              res.render('city',{title:"City Page",citydata:data,menu})
+            }
+          })
+        }
+      })
+  })
 
-module.exports= cityRouter;
+  //http://localhost:8700/city/details
+  cityRouter.route('/details/:id')
+      .get(function(req,res){
+        //var id = req.params.id
+        var {id} = req.params
+        mongodb.connect(cityurl,(err,connection) => {
+          if(err){
+            res.status(500).send("Error while connecting")
+          }else{
+            const dbo = connection.db('aryabhata')
+            dbo.collection('city').findOne({_id:id},(err,data)=>{
+              if(err){
+                res.status(501).send("Error while fetching")
+              }else{
+                res.render('citylDetails',{title:"City Details Page",citydata:data,menu})
+              }
+            })
+          }
+        })
+      })
+    
+   return cityRouter
+}
+
+module.exports= router;

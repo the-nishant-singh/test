@@ -1,8 +1,35 @@
 var express = require('express');
 var hotelRouter = express.Router();
 var mongodb = require('mongodb').MongoClient;
-//var url = "mongodb://localhost:27017";
-var url = "mongodb+srv://dev:mongo123@cluster0.f8vmc.mongodb.net/aryabhat?retryWrites=true&w=majority";
+var url = "mongodb://localhost:27017";
+
+function router(menu){
+
+  //http://localhost:8700/hotel
+  hotelRouter.route('/')
+      .get(function(req,res){
+          //res.send(hotels)
+          res.render('hotel',{title:"Hotel Page",hoteldata:hotels,menu})
+      })
+
+  //http://localhost:8700/hotel/details
+  hotelRouter.route('/details')
+      .get(function(req,res){
+          res.send("Hotel Details")
+      })
+    
+   return hotelRouter
+}
+
+module.exports = router;
+
+
+
+///////
+var express = require('express');
+var hotelRouter = express.Router();
+var mongodb = require('mongodb').MongoClient;
+var url = "mongodb://localhost:27017";
 
 function router(menu){
   hotelRouter.route('/')
@@ -27,24 +54,9 @@ function router(menu){
       })
 
   //http://localhost:8700/hotel/details
-  hotelRouter.route('/details/:id')
+  hotelRouter.route('/details')
       .get(function(req,res){
-        //var id = req.params.id
-        var {id} = req.params
-        mongodb.connect(url,(err,connection) => {
-          if(err){
-            res.status(500).send("Error while connecting")
-          }else{
-            const dbo = connection.db('aryabhat')
-            dbo.collection('hotels').findOne({_id:id},(err,data)=>{
-              if(err){
-                res.status(501).send("Error while fetching")
-              }else{
-                res.render('hotelDetails',{title:"Hotel Details Page",hoteldata:data,menu})
-              }
-            })
-          }
-        })
+          res.send("Hotel Details")
       })
     
    return hotelRouter
